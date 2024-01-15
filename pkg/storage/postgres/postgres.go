@@ -162,3 +162,7 @@ func (s *Storage) DeleteTask(id int) error {
 	)
 	return err
 }
+
+func (s *Storage) Close() {
+	s.db.Close()
+}
