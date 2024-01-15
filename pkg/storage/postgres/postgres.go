@@ -1,4 +1,4 @@
-package storage
+package postgres
 
 import (
 	"context"
@@ -34,53 +34,53 @@ type Task struct {
 	Content    string
 }
 
-// Tasks возвращает список задач из БД.
-func (s *Storage) Tasks(taskID, authorID int) ([]Task, error) {
-	rows, err := s.db.Query(context.Background(), `
-		SELECT 
-			id,
-			opened,
-			closed,
-			author_id,
-			assigned_id,
-			title,
-			content
-		FROM tasks
-		WHERE
-			($1 = 0 OR id = $1) AND
-			($2 = 0 OR author_id = $2)
-		ORDER BY id;
-	`,
-		taskID,
-		authorID,
-	)
-	if err != nil {
-		return nil, err
-	}
-	var tasks []Task
-	// итерирование по результату выполнения запроса
-	// и сканирование каждой строки в переменную
-	for rows.Next() {
-		var t Task
-		err = rows.Scan(
-			&t.ID,
-			&t.Opened,
-			&t.Closed,
-			&t.AuthorID,
-			&t.AssignedID,
-			&t.Title,
-			&t.Content,
-		)
-		if err != nil {
-			return nil, err
-		}
-		// добавление переменной в массив результатов
-		tasks = append(tasks, t)
+// // Tasks возвращает список задач из БД.
+// func (s *Storage) Tasks(taskID, authorID int) ([]Task, error) {
+// 	rows, err := s.db.Query(context.Background(), `
+// 		SELECT
+// 			id,
+// 			opened,
+// 			closed,
+// 			author_id,
+// 			assigned_id,
+// 			title,
+// 			content
+// 		FROM tasks
+// 		WHERE
+// 			($1 = 0 OR id = $1) AND
+// 			($2 = 0 OR author_id = $2)
+// 		ORDER BY id;
+// 	`,
+// 		taskID,
+// 		authorID,
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	var tasks []Task
+// 	// итерирование по результату выполнения запроса
+// 	// и сканирование каждой строки в переменную
+// 	for rows.Next() {
+// 		var t Task
+// 		err = rows.Scan(
+// 			&t.ID,
+// 			&t.Opened,
+// 			&t.Closed,
+// 			&t.AuthorID,
+// 			&t.AssignedID,
+// 			&t.Title,
+// 			&t.Content,
+// 		)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		// добавление переменной в массив результатов
+// 		tasks = append(tasks, t)
 
-	}
-	// ВАЖНО не забыть проверить rows.Err()
-	return tasks, rows.Err()
-}
+// 	}
+// 	// ВАЖНО не забыть проверить rows.Err()
+// 	return tasks, rows.Err()
+// }
 
 // NewTask создаёт новую задачу и возвращает её id.
 func (s *Storage) NewTask(t Task) (int, error) {
