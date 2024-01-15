@@ -38,10 +38,10 @@ func (s *Storage) NewTask(t Task) (int, error) {
 		INSERT INTO tasks (author_id, assigned_id, title, content)
 		VALUES ($1, $2, $3, $4) RETURNING id;
 		`,
-		t.Title,
-		t.Content,
 		t.AuthorID,
 		t.AssignedID,
+		t.Title,
+		t.Content,
 	).Scan(&id)
 	return id, err
 }
@@ -156,7 +156,7 @@ func (s *Storage) DeleteTask(id int) error {
 
 	_, err = s.db.Exec(context.Background(), `
 	DELETE FROM public.tasks
-	WHERE id=1;
+	WHERE id=$1;
 	`,
 		id,
 	)
