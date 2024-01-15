@@ -4,6 +4,8 @@ go 1.21.5
 
 require github.com/jackc/pgx/v4 v4.18.1
 
+require github.com/pkg/errors v0.8.1 // indirect
+
 require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.0 // indirect
