@@ -35,11 +35,13 @@ type Task struct {
 func (s *Storage) NewTask(t Task) (int, error) {
 	var id int
 	err := s.db.QueryRow(context.Background(), `
-		INSERT INTO tasks (title, content)
-		VALUES ($1, $2) RETURNING id;
+		INSERT INTO tasks (author_id, assigned_id, title, content)
+		VALUES ($1, $2, $3, $4) RETURNING id;
 		`,
 		t.Title,
 		t.Content,
+		t.AuthorID,
+		t.AssignedID,
 	).Scan(&id)
 	return id, err
 }
@@ -126,11 +128,37 @@ func (s *Storage) TasksWithLabel(taskId int) ([]Task, error) {
 }
 
 func (s *Storage) UpdateTask(id int, t Task) error {
-
-	return nil
+	_, err := s.db.Exec(context.Background(), `
+	UPDATE public.tasks
+	SET closed=$1, author_id=$2, assigned_id=$3, title=$4, content=$5
+	WHERE id=$6;
+	`,
+		t.Closed,
+		t.AuthorID,
+		t.AssignedID,
+		t.Title,
+		t.Content,
+		id,
+	)
+	return err
 }
 
-func (s *Storage) DeleteTask(t Task) error {
+func (s *Storage) DeleteTask(id int) error {
+	_, err := s.db.Exec(context.Background(), `
+	DELETE FROM public.task_labels
+	WHERE task_id=$1;
+	`,
+		id,
+	)
+	if err != nil {
+		return err
+	}
 
-	return nil
+	_, err = s.db.Exec(context.Background(), `
+	DELETE FROM public.tasks
+	WHERE id=1;
+	`,
+		id,
+	)
+	return err
 }

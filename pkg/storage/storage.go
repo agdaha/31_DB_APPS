@@ -10,5 +10,5 @@ type Data interface {
 	TasksWithAuthor(int) ([]postgres.Task, error)
 	TasksWithLabel(int) ([]postgres.Task, error)
 	UpdateTask(int, postgres.Task) error
-	DeleteTask(postgres.Task) error
+	DeleteTask(int) error
 }
