@@ -59,7 +59,7 @@ func (s *Storage) Tasks() ([]Task, error) {
 		FROM tasks
 		ORDER BY id;
 	`)
-	return query(err, rows)
+	return query(rows, err)
 }
 
 func query(err error, rows pgx.Rows) ([]Task, error) {
